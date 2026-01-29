@@ -68,24 +68,24 @@ if st.session_state.todos:
     for i, todo in enumerate(st.session_state.todos):
         # st.write(f'{i + 1}번째 todo : {todo}')
         display_text = f'~~{todo.get_task()}~~' if todo.get_done() else todo.get_task()
-        col1, col2, col3, col4 = st.columns([0.7, 0.1, 0.1, 0.1], gap='xxsmall')
+        col1, col2, col3 = st.columns([0.6, 0.25, 0.15], gap="small")
         # col1.checkbox(f'{i + 1}', value=todo.get_done(), key=f'done_{i}', on_change=togle_done, args=(i,))
         col1.checkbox(f'{display_text}', value=todo.get_done(), key=f'done_{i}', on_change=togle_done, args=(i,))
         # col2.markdown(f'~~{todo.get_task()}~~' if todo.get_done() else todo.get_task())
         # 위로 이동 버튼
         with col2:
-            if st.button('⬆️', key=f'up_{i}'):
+            sub_c1, sub_c2 = st.columns(2)
+            if sub_c1.button('⬆️', key=f'up_{i}'):
                 move_up(i)
+                st.rerun()
+            if sub_c2.button('⬇️', key=f'down_{i}'):
+                move_down(i)
                 st.rerun()
 
         # 아래로 이동 버튼
         with col3:
-            if st.button('⬇️', key=f'down_{i}'):
-                move_down(i)
-                st.rerun()
-        # 삭제 버튼
-        with col4:
-            if st.button('삭제', key=f'del_{i}'):
+            # 글자 '삭제' 대신 이모지 '🗑️'를 사용해 가로 공간 절약
+            if st.button('🗑️', key=f'del_{i}'):
                 delete_todo(i)
                 st.rerun()
 
