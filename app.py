@@ -54,9 +54,10 @@ st.text_input('새로운 할 일 추가', key='new_task', on_change=add_todo)
 if st.session_state.todos:
     for i, todo in enumerate(st.session_state.todos):
         # st.write(f'{i + 1}번째 todo : {todo}')
+        display_text = f'~~{todo.get_task()}~~' if todo.get_done() else todo.get_task()
         col1, col2 = st.columns([0.2, 0.8])
         # col1.checkbox(f'{i + 1}', value=todo.get_done(), key=f'done_{i}', on_change=togle_done, args=(i,))
-        col1.checkbox('', value=todo.get_done(), key=f'done_{i}', on_change=togle_done, args=(i,))
+        col1.checkbox(f'{display_text}', value=todo.get_done(), key=f'done_{i}', on_change=togle_done, args=(i,))
         col2.markdown(f'~~{todo.get_task()}~~' if todo.get_done() else todo.get_task())
 else:
     st.info('할 일을 추가해보세요.')
