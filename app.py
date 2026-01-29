@@ -43,6 +43,19 @@ def togle_done(index: int):
     todo = st.session_state.todos[index]
     todo.set_done(not todo.get_done())
 
+def delete_todo(index: int):
+    st.session_state.todos.pop(index)
+
+def move_up(index: int):
+    if index > 0:
+        st.session_state.todos[index], st.session_state.todos[index-1] = \
+        st.session_state.todos[index-1], st.session_state.todos[index]
+
+def move_down(index: int):
+    if index < len(st.session_state.todos) - 1:
+        st.session_state.todos[index], st.session_state.todos[index+1] = \
+        st.session_state.todos[index+1], st.session_state.todos[index]
+
 # todos (todo 객체를 담을 리스트를 초기화)
 if 'todos' not in st.session_state:
     st.session_state.todos = []
@@ -55,13 +68,41 @@ if st.session_state.todos:
     for i, todo in enumerate(st.session_state.todos):
         # st.write(f'{i + 1}번째 todo : {todo}')
         display_text = f'~~{todo.get_task()}~~' if todo.get_done() else todo.get_task()
-        col1, col2 = st.columns([0.2, 0.8])
+        col1, col2, col3, col4 = st.columns([0.7, 0.1, 0.1, 0.1])
         # col1.checkbox(f'{i + 1}', value=todo.get_done(), key=f'done_{i}', on_change=togle_done, args=(i,))
         col1.checkbox(f'{display_text}', value=todo.get_done(), key=f'done_{i}', on_change=togle_done, args=(i,))
         # col2.markdown(f'~~{todo.get_task()}~~' if todo.get_done() else todo.get_task())
-        if col2.button('삭제', key=f'del_{i}'):
-            st.session_state.todos.pop(i)
-            st.rerun()
+        # 위로 이동 버튼
+        with col2:
+            if st.button('⬆️', key=f'up_{i}'):
+                move_up(i)
+                st.rerun()
+
+        # 아래로 이동 버튼
+        with col3:
+            if st.button('⬇️', key=f'down_{i}'):
+                move_down(i)
+                st.rerun()
+        # 삭제 버튼
+        with col4:
+            if st.button('삭제', key=f'del_{i}'):
+                delete_todo(i)
+                st.rerun()
+
+        # if col2.button('삭제', key=f'del_{i}'):
+        #     st.session_state.todos.pop(i)
+        #     st.rerun()
 else:
     st.info('할 일을 추가해보세요.')
 
+# pip list하면 현재 가상환경(pystusdy_env)에 있는 도구들(패키지들)을 알 수 있음
+# streamlit에 배포하기 위해 github에 올릴 때는 requirements.txt로 만들어서 push
+# pip list --format=freeze > requirements.txt
+
+# streamlit에서 충돌 발생하면 LLM 활용해서 해당 라이브러리에 적합한 버전으로 수정 및 삭제하면 배포 가능
+# requirements.txt에서 'win'으로 검색해서 세가지 삭제하기
+# 1. pywin32==311
+# 2. pywinpty==2.0.15
+# 3. win_inet_pton==1.1.0
+
+# mac은 아마도 pyodbc랑 unixodbc 이 두 개를 지워야 할 듯
